@@ -1,22 +1,32 @@
 from flask import Flask, jsonify, request
-import json
+import csv
 
 app = Flask(__name__)
 
-USER_DATA_FILE = 'user_data.json'
+USER_DATA_FILE = 'data.csv'
 
-# Function to save user data to a file
+# Function to save user data to a CSV file
 def save_user_data(users):
-    with open(USER_DATA_FILE, 'w') as f:
-        json.dump(users, f)
+    with open(USER_DATA_FILE, 'w', newline='') as f:
+        fieldnames = ['id', 'name']
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for user in users:
+            writer.writerow(user)
 
-# Function to load user data from a file
+# Function to load user data from a CSV file
 def load_user_data():
+    users = []
     try:
         with open(USER_DATA_FILE, 'r') as f:
-            return json.load(f)
+            reader = csv.DictReader(f)
+            for row in reader:
+                # Convert 'id' field to integer
+                row['id'] = int(row['id'])
+                users.append(row)
     except FileNotFoundError:
-        return []
+        pass
+    return users
 
 # Initialize users from file or create an empty list if file doesn't exist
 users = load_user_data()
