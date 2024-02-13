@@ -1,0 +1,1 @@
+The User Management API is a simple RESTful API built using Python and Flask framework. It provides endpoints for managing user data, including creating new users, retrieving user information, and listing all users.
