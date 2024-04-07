@@ -47,9 +47,10 @@ jobs:
         REPOSITORY: new-repo
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        docker build -t $REPOSITORY:$IMAGE_TAG .
-        docker push $REPOSITORY:$IMAGE_TAG
-        echo "image=$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+        aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 440094375133.dkr.ecr.us-east-2.amazonaws.com
+        docker build -t new-repo .
+        docker tag new-repo:latest 440094375133.dkr.ecr.us-east-2.amazonaws.com/new-repo:latest
+        docker push 440094375133.dkr.ecr.us-east-2.amazonaws.com/new-repo:latest
 
     - name: Fill in the new image ID in the Amazon ECS task definition
       id: task-def
@@ -57,7 +58,7 @@ jobs:
       with:
         task-definition: ${{ env.ECS_TASK_DEFINITION }}
         container-name: ${{ env.CONTAINER_NAME }}
-        image: ${{ steps.build-image.outputs.image }}
+        image: docker.io/library/new-repo
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
