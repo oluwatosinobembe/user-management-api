@@ -46,7 +46,7 @@ jobs:
         REPOSITORY: new-repo
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        
+        aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 440094375133.dkr.ecr.us-east-2.amazonaws.com
         docker build -t new-repo .
         docker tag new-repo:latest 440094375133.dkr.ecr.us-east-2.amazonaws.com/new-repo:latest
         docker push 440094375133.dkr.ecr.us-east-2.amazonaws.com/new-repo:latest
