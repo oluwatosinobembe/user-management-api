@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Stop ECS Task
         run: |
-          aws ecs stop-task --cluster new-cluster --task arn:aws:ecs:eu-west-2:440094375133:task/new_cluster/7f34a8dfc7814b668a6c544fe7c1e23e
+          aws ecs stop-task --cluster new_cluster --task 7af96c4f369746208582449bd1cfa8e5
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
