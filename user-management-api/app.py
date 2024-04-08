@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 import csv
 
 app = Flask(__name__)
+app.run(port=8000, debug=True)
 
 USER_DATA_FILE = 'data.csv'
 
