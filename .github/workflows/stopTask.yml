@@ -1,4 +1,4 @@
-name: StopECSTask
+name: StopECSTasks
 
 # on:
 #   repository_dispatch:
