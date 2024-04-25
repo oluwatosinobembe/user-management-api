@@ -8,11 +8,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Retrieve ECS Cluster and Service Name
+      - name: Retrieve ECS Cluster and Service Names
         id: get-names
         run: |
-          cluster_name=$(aws ecs list-clusters --query "clusterArns[0]" --output text | cut -d'/' -f2)
-          service_name=$(aws ecs list-services --cluster $cluster_name --query "serviceArns[0]" --output text | cut -d'/' -f2)
+          # Retrieve cluster and service names
+          ecs_info=$(aws ecs list-services --query "serviceArns[0]" --output json)
+          cluster_name=$(echo $ecs_info | jq -r '.[] | split("/") | .[1]')
+          service_name=$(echo $ecs_info | jq -r '.[] | split("/") | .[2]')
+
+          # Set output variables
           echo "::set-output name=cluster::$cluster_name"
           echo "::set-output name=service::$service_name"
 
