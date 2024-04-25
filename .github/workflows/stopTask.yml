@@ -17,8 +17,8 @@ jobs:
       - name: Retrieve ECS Cluster and Service Name
         id: get-names
         run: |
-            cluster=$(aws ecs list-clusters --query "clusterArns[*]" --output text | awk -F/ '{print $NF}')
-            service=$(aws ecs list-services --cluster testCluster --query "serviceArns[*]" --output text | rev | cut -d'/' -f1 | rev)
+            cluster_name=$(aws ecs list-clusters --query "clusterArns[*]" --output text | awk -F/ '{print $NF}')
+            service_name=$(aws ecs list-services --cluster testCluster --query "serviceArns[*]" --output text | rev | cut -d'/' -f1 | rev)
             echo "::set-output name=cluster::$cluster_name"
             echo "::set-output name=service::$service_name"
 
