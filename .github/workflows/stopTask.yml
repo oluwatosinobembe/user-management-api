@@ -17,21 +17,14 @@ jobs:
       - name: Retrieve ECS Cluster and Service Name
         id: get-names
         run: |
-            clusters=$(aws ecs list-clusters --query "clusterArns" --output text)
-            for cluster_arn in $clusters; do
-                cluster_name=$(aws ecs describe-clusters --clusters "$cluster_arn" --query "clusters[0].clusterName" --output text)
-                services=$(aws ecs list-services --cluster "$cluster_name" --query "serviceArns" --output text)
-                for service_arn in $services; do
-                    service_name=$(aws ecs describe-services --cluster "$cluster_name" --services "$service_arn" --query "services[0].serviceName" --output text)
-                    echo "::set-output name=cluster::$cluster_name"
-                    echo "::set-output name=service::$service_name"
-                done
-              done
-
+            cluster=$(aws ecs list-clusters --query "clusterArns[*]" --output text | awk -F/ '{print $NF}')
+            service=$(aws ecs list-services --cluster testCluster --query "serviceArns[*]" --output text | rev | cut -d'/' -f1 | rev)
+            echo "::set-output name=cluster::$cluster_name"
+            echo "::set-output name=service::$service_name"
 
       - name: Stop ECS Tasks
         run: |
-            aws ecs update-service --cluster new_cluster --service new-service --force-new-deployment
+            aws ecs update-service --cluster $cluster_name --service $service_name --force-new-deployment
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
