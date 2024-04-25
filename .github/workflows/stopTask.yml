@@ -1,32 +1,25 @@
 name: StopECSTasks
-
-# on:
-#   repository_dispatch:
-#     types: [stop-ecs-task]
-
 on:
-    push:
-      branches: [ "main" ]
+  push:
+    branches: [ "main" ]
 
 jobs:
   stop_task:
     runs-on: ubuntu-latest
 
     steps:
-      
       - name: Retrieve ECS Cluster and Service Name
         id: get-names
         run: |
-            cluster_name=$(aws ecs list-clusters --query "clusterArns[*]" --output text | awk -F/ '{print $NF}')
-            service_name=$(aws ecs list-services --cluster testCluster --query "serviceArns[*]" --output text | rev | cut -d'/' -f1 | rev)
-            echo "::set-output name=cluster::$cluster_name"
-            echo "::set-output name=service::$service_name"
+          cluster_name=$(aws ecs list-clusters --query "clusterArns[0]" --output text | cut -d'/' -f2)
+          service_name=$(aws ecs list-services --cluster $cluster_name --query "serviceArns[0]" --output text | cut -d'/' -f2)
+          echo "::set-output name=cluster::$cluster_name"
+          echo "::set-output name=service::$service_name"
 
       - name: Stop ECS Tasks
         run: |
-            aws ecs update-service --cluster ${{ steps.get-names.outputs.cluster }} --service ${{ steps.get-names.outputs.service }} --force-new-deployment
+          aws ecs update-service --cluster ${{ steps.get-names.outputs.cluster }} --service ${{ steps.get-names.outputs.service }} --force-new-deployment
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: eu-west-2
-          
