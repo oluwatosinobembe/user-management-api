@@ -20,6 +20,12 @@ jobs:
           echo "Cluster Name: $cluster_name"
           echo "Service Name: $service_name"
 
+          # Check if cluster_name and service_name are empty
+          if [ -z "$cluster_name" ] || [ -z "$service_name" ]; then
+              echo "Error: Failed to retrieve cluster or service name."
+              exit 1
+          fi
+
           # Set output variables
           echo "::set-output name=cluster::$cluster_name"
           echo "::set-output name=service::$service_name"
@@ -33,6 +39,11 @@ jobs:
           # Debugging: Print cluster and service names
           echo "Cluster Name: $cluster_name"
           echo "Service Name: $service_name"
+          # Check if cluster_name and service_name are empty
+          if [ -z "$cluster_name" ] || [ -z "$service_name" ]; then
+              echo "Error: Failed to retrieve cluster or service name."
+              exit 1
+          fi
           # Stop ECS tasks
           aws ecs update-service --cluster "$cluster_name" --service "$service_name" --force-new-deployment
         env:
