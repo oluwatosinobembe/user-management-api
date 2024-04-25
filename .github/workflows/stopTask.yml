@@ -16,6 +16,10 @@ jobs:
           cluster_name=$(aws ecs list-clusters --output json | jq -r '.clusterArns[0]' | cut -d'/' -f2)
           service_name=$(aws ecs list-services --cluster $cluster_name --output json | jq -r '.serviceArns[0]' | cut -d'/' -f3)
 
+          # Debugging: Print cluster and service names
+          echo "Cluster Name: $cluster_name"
+          echo "Service Name: $service_name"
+
           # Set output variables
           echo "::set-output name=cluster::$cluster_name"
           echo "::set-output name=service::$service_name"
@@ -26,6 +30,9 @@ jobs:
           # Retrieve cluster and service names from outputs
           cluster_name="${{ steps.get-names.outputs.cluster }}"
           service_name="${{ steps.get-names.outputs.service }}"
+          # Debugging: Print cluster and service names
+          echo "Cluster Name: $cluster_name"
+          echo "Service Name: $service_name"
           # Stop ECS tasks
           aws ecs update-service --cluster "$cluster_name" --service "$service_name" --force-new-deployment
         env:
