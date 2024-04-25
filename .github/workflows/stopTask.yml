@@ -13,9 +13,8 @@ jobs:
         run: |
           echo "Retrieving ECS Cluster and Service Names..."
           # Retrieve ECS cluster and service names
-          ecs_info=$(aws ecs list-services --query "serviceArns[0]" --output json)
-          cluster_name=$(echo $ecs_info | jq -r '.[0] | split("/") | .[1]')
-          service_name=$(echo $ecs_info | jq -r '.[0] | split("/") | .[2]')
+          cluster_name=$(aws ecs list-clusters --output json | jq -r '.clusterArns[0]' | cut -d'/' -f2)
+          service_name=$(aws ecs list-services --cluster $cluster_name --output json | jq -r '.serviceArns[0]' | cut -d'/' -f3)
 
           # Set output variables
           echo "::set-output name=cluster::$cluster_name"
