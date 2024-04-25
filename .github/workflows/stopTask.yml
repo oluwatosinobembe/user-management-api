@@ -11,10 +11,14 @@ jobs:
       - name: Retrieve ECS Cluster and Service Names
         id: get-names
         run: |
+          echo "Retrieving ECS Cluster and Service Names..."
           # Retrieve cluster and service names
           ecs_info=$(aws ecs list-services --query "serviceArns[0]" --output json)
+          echo "ECS Info: $ecs_info"
           cluster_name=$(echo $ecs_info | jq -r '.[] | split("/") | .[1]')
           service_name=$(echo $ecs_info | jq -r '.[] | split("/") | .[2]')
+          echo "Cluster Name: $cluster_name"
+          echo "Service Name: $service_name"
 
           # Set output variables
           echo "::set-output name=cluster::$cluster_name"
@@ -22,6 +26,7 @@ jobs:
 
       - name: Stop ECS Tasks
         run: |
+          echo "Stopping ECS Tasks..."
           aws ecs update-service --cluster ${{ steps.get-names.outputs.cluster }} --service ${{ steps.get-names.outputs.service }} --force-new-deployment
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
