@@ -23,7 +23,11 @@ jobs:
       - name: Stop ECS Tasks
         run: |
           echo "Stopping ECS Tasks..."
-          aws ecs update-service --cluster ${{ steps.get-names.outputs.cluster }} --service ${{ steps.get-names.outputs.service }} --force-new-deployment
+          # Retrieve cluster and service names from outputs
+          cluster_name="${{ steps.get-names.outputs.cluster }}"
+          service_name="${{ steps.get-names.outputs.service }}"
+          # Stop ECS tasks
+          aws ecs update-service --cluster "$cluster_name" --service "$service_name" --force-new-deployment
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
